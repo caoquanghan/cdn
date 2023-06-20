@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+
+<body>
+
+    <h1>Home</h1>
+    <p>Home page content goes here.</p>
+    <!-- uncompress zip file with js   -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+    <script>
+        var zipPath = 'combine.min.zip';
+        var unzipPath = 'combine.min.js';
+        fetch(zipPath)
+            .then(response => response.blob())
+            .then(blob => {
+                var zip = new JSZip();
+                return zip.loadAsync(blob);
+            })
+            .then(zip => {
+                console.log(zip);
+                return zip.file(unzipPath).async('string');
+            })
+            .then(unzippedContent => {
+                //tạo 1 thẻ script
+                var script = document.createElement('script');
+                script.innerHTML = unzippedContent;
+                document.body.appendChild(script);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+</body>
+
+
+</html>
