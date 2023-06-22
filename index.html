@@ -65,8 +65,7 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 // Xử lý dữ liệu trả về từ API ở đây
-                console.log( xhr.responseText);
-                document.getElementById('data').innerText = xhr.responseText.decompress();
+                document.getElementById('data').innerHTML = eval(xhr.responseText.decompress());
             }
         };
 
