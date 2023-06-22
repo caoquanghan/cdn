@@ -11,36 +11,55 @@
     <h1>Home</h1>
     <p>Home page content goes here.</p>
     <!-- uncompress zip file with js   -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
     <script>
-        var zipUrl = 'https://github.com/caoquanghan/cdn/raw/main/combine.min.zip';
+    String.prototype.decompress = function () {
+        "use strict";
+        // Build the dictionary.
+        var i, tmp = [],
+            dictionary = [],
+            compressed = this,
+            w,
+            result,
+            k,
+            entry = "",
+            dictSize = 256;
+        for (i = 0; i < 256; i += 1) {
+            dictionary[i] = String.fromCharCode(i);
+        }
 
-        fetch(zipUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                var zip = new JSZip();
-                return zip.loadAsync(blob);
-            })
-            .then(zip => {
-                // Lấy danh sách các tệp tin trong tệp ZIP
-                var fileNames = Object.keys(zip.files);
+        if(compressed && typeof compressed === 'string') {
+            // convert string into Array.
+            for(i = 0; i < compressed.length; i += 1) {
+                tmp.push(compressed[i].charCodeAt(0));
+            }
+            compressed = tmp;
+            tmp = null;
+        }
 
-                // Giải nén tất cả các tệp tin và lưu thành các tệp tin riêng lẻ
-                fileNames.forEach(fileName => {
-                    zip.file(fileName).async('string').then(unzippedContent => {
-                        var script = document.createElement('script');
-                        script.type = 'text/javascript';
-                        script.id = fileName;
-                        script.innerHTML = unzippedContent;
-                        document.body.appendChild(script);
-                    })
-                });
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        w = String.fromCharCode(compressed[0]);
+        result = w;
+        for (i = 1; i < compressed.length; i += 1) {
+            k = compressed[i];
+            if (dictionary[k]) {
+                entry = dictionary[k];
+            } else {
+                if (k === dictSize) {
+                    entry = w + w.charAt(0);
+                } else {
+                    return null;
+                }
+            }
+
+            result += entry;
+
+            // Add w+entry[0] to the dictionary.
+            dictionary[dictSize++] = w + entry.charAt(0);
+
+            w = entry;
+        }
+        return result;
+    };
     </script>
 </body>
-
-
+var a = 'fdfdsfds'
 </html>
