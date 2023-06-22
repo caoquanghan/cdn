@@ -10,56 +10,70 @@
 
     <h1>Home</h1>
     <p>Home page content goes here.</p>
-    <!-- uncompress zip file with js   -->
+    <script id="data"></script>
     <script>
-    String.prototype.decompress = function () {
-        "use strict";
-        // Build the dictionary.
-        var i, tmp = [],
-            dictionary = [],
-            compressed = this,
-            w,
-            result,
-            k,
-            entry = "",
-            dictSize = 256;
-        for (i = 0; i < 256; i += 1) {
-            dictionary[i] = String.fromCharCode(i);
-        }
-
-        if(compressed && typeof compressed === 'string') {
-            // convert string into Array.
-            for(i = 0; i < compressed.length; i += 1) {
-                tmp.push(compressed[i].charCodeAt(0));
+        String.prototype.decompress = function () {
+            "use strict";
+            // Build the dictionary.
+            var i, tmp = [],
+                dictionary = [],
+                compressed = this,
+                w,
+                result,
+                k,
+                entry = "",
+                dictSize = 256;
+            for (i = 0; i < 256; i += 1) {
+                dictionary[i] = String.fromCharCode(i);
             }
-            compressed = tmp;
-            tmp = null;
-        }
 
-        w = String.fromCharCode(compressed[0]);
-        result = w;
-        for (i = 1; i < compressed.length; i += 1) {
-            k = compressed[i];
-            if (dictionary[k]) {
-                entry = dictionary[k];
-            } else {
-                if (k === dictSize) {
-                    entry = w + w.charAt(0);
-                } else {
-                    return null;
+            if (compressed && typeof compressed === 'string') {
+                // convert string into Array.
+                for (i = 0; i < compressed.length; i += 1) {
+                    tmp.push(compressed[i].charCodeAt(0));
                 }
+                compressed = tmp;
+                tmp = null;
             }
 
-            result += entry;
+            w = String.fromCharCode(compressed[0]);
+            result = w;
+            for (i = 1; i < compressed.length; i += 1) {
+                k = compressed[i];
+                if (dictionary[k]) {
+                    entry = dictionary[k];
+                } else {
+                    if (k === dictSize) {
+                        entry = w + w.charAt(0);
+                    } else {
+                        return null;
+                    }
+                }
 
-            // Add w+entry[0] to the dictionary.
-            dictionary[dictSize++] = w + entry.charAt(0);
+                result += entry;
 
-            w = entry;
-        }
-        return result;
-    };
+                // Add w+entry[0] to the dictionary.
+                dictionary[dictSize++] = w + entry.charAt(0);
+
+                w = entry;
+            }
+            return result;
+        };
+        var xhr = new XMLHttpRequest();
+
+        // Thiết lập hàm callback xử lý khi nhận được phản hồi từ API
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Xử lý dữ liệu trả về từ API ở đây
+                console.log( xhr.responseText);
+                document.getElementById('data').innerText = xhr.responseText.decompress();
+            }
+        };
+
+        // Gửi yêu cầu GET đến API
+        xhr.open('GET', 'https://github.com/caoquanghan/cdn/raw/main/enCodeData.txt', true);
+        xhr.send();
     </script>
 </body>
-var a = 'fdfdsfds'
+
 </html>

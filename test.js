@@ -48,6 +48,7 @@ String.prototype.decompress = function () {
 		k,
 		entry = "",
 		dictSize = 256;
+	console.log(dictionary)
 	for (i = 0; i < 256; i += 1) {
 		dictionary[i] = String.fromCharCode(i);
 	}
@@ -89,4 +90,8 @@ var inputData = fs.readFileSync('combine.min.js');
 inputData = `\"` + inputData.toString().replace(/\'/g, '\\\'').replace(/\"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') +`\"`;
 var outputData = inputData.compress();
 fs.writeFileSync('enCodeData.txt', outputData);
+var inputData = fs.readFileSync('enCodeData.txt');
+var outputData = inputData.toString().decompress();
+console.log(inputData.toString());
+console.log(outputData);
 
