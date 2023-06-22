@@ -19,11 +19,15 @@ String.prototype.compress = function (asArray) {
 	for (i = 0; i < uncompressed.length; i += 1) {
 		c = uncompressed.charAt(i);
 		wc = w + c;
+		//Do not use dictionary[wc] because javascript arrays
+		//will return values for array['pop'], array['push'] etc
+	   // if (dictionary[wc]) {
 		if (dictionary.hasOwnProperty(wc)) {
 			w = wc;
 		} else {
 			result.push(dictionary[w]);
 			ASCII += String.fromCharCode(dictionary[w]);
+			// Add wc to the dictionary.
 			dictionary[wc] = dictSize++;
 			w = String(c);
 		}
@@ -48,7 +52,6 @@ String.prototype.decompress = function () {
 		k,
 		entry = "",
 		dictSize = 256;
-	console.log(dictionary)
 	for (i = 0; i < 256; i += 1) {
 		dictionary[i] = String.fromCharCode(i);
 	}
@@ -87,11 +90,18 @@ String.prototype.decompress = function () {
 };
 var inputData = fs.readFileSync('combine.min.js');
 //thêm escape cho các ký tự đặc biệt
-inputData = `\"` + inputData.toString().replace(/\'/g, '\\\'').replace(/\"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') +`\"`;
-var outputData = inputData.compress();
-fs.writeFileSync('enCodeData.txt', outputData);
-var inputData = fs.readFileSync('enCodeData.txt');
-var outputData = inputData.toString().decompress();
-console.log(inputData.toString());
-console.log(outputData);
+inputData = `\"` + inputData.toString().replace(/\'/g, '\\\'').replace(/\"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + `\"`;
+fs.writeFileSync('input.txt', inputData);
+var checkData = fs.readFileSync('check.txt');
+console.log(checkData.toString() === inputData);
+console.log(checkData.toString().compress() === inputData.compress());
+//luu nguyen ban noi dung checkData.toString().compress() vao file output.txt
+var decode = {
+	data: checkData.toString().compress(),
+}
+fs.writeFileSync('output.json', JSON.stringify(decode));
 
+var t = fs.readFileSync('output.json');
+var decode = JSON.parse(t).data;
+
+console.log(decode.decompress() === inputData.compress().decompress());
